@@ -96,9 +96,15 @@ int tcg2_create_digest(struct udevice *dev, const u8 *input, u32 length,
 		       struct tpml_digest_values *digest_list)
 {
 	u8 final[sizeof(union tpmu_ha)];
+#if IS_ENABLED(CONFIG_SHA256)
 	sha256_context ctx_256;
+#endif
+#if IS_ENABLED(CONFIG_SHA384) || IS_ENABLED(CONFIG_SHA512)
 	sha512_context ctx_512;
+#endif
+#if IS_ENABLED(CONFIG_SHA1)
 	sha1_context ctx;
+#endif
 	u32 active;
 	size_t i;
 	u32 len;
@@ -114,30 +120,38 @@ int tcg2_create_digest(struct udevice *dev, const u8 *input, u32 length,
 			continue;
 
 		switch (hash_algo_list[i].hash_alg) {
+#if IS_ENABLED(CONFIG_SHA1)
 		case TPM2_ALG_SHA1:
 			sha1_starts(&ctx);
 			sha1_update(&ctx, input, length);
 			sha1_finish(&ctx, final);
 			len = TPM2_SHA1_DIGEST_SIZE;
 			break;
+#endif
+#if IS_ENABLED(CONFIG_SHA256)
 		case TPM2_ALG_SHA256:
 			sha256_starts(&ctx_256);
 			sha256_update(&ctx_256, input, length);
 			sha256_finish(&ctx_256, final);
 			len = TPM2_SHA256_DIGEST_SIZE;
 			break;
+#endif
+#if IS_ENABLED(CONFIG_SHA384)
 		case TPM2_ALG_SHA384:
 			sha384_starts(&ctx_512);
 			sha384_update(&ctx_512, input, length);
 			sha384_finish(&ctx_512, final);
 			len = TPM2_SHA384_DIGEST_SIZE;
 			break;
+#endif
+#if IS_ENABLED(CONFIG_SHA512)
 		case TPM2_ALG_SHA512:
 			sha512_starts(&ctx_512);
 			sha512_update(&ctx_512, input, length);
 			sha512_finish(&ctx_512, final);
 			len = TPM2_SHA512_DIGEST_SIZE;
 			break;
+#endif
 		default:
 			printf("%s: unsupported algorithm %x\n", __func__,
 			       hash_algo_list[i].hash_alg);
@@ -236,10 +250,18 @@ static int tcg2_log_init(struct udevice *dev, struct tcg2_event_log *elog)
 			continue;
 
 		switch (hash_algo_list[i].hash_alg) {
+#if IS_ENABLED(CONFIG_SHA1)
 		case TPM2_ALG_SHA1:
+#endif
+#if IS_ENABLED(CONFIG_SHA256)
 		case TPM2_ALG_SHA256:
+#endif
+#if IS_ENABLED(CONFIG_SHA384)
 		case TPM2_ALG_SHA384:
+#endif
+#if  IS_ENABLED(CONFIG_SHA512)
 		case TPM2_ALG_SHA512:
+#endif
 			count++;
 			break;
 		default:
@@ -337,10 +359,18 @@ static int tcg2_replay_eventlog(struct tcg2_event_log *elog,
 			algo = get_unaligned_le16(log + pos);
 			pos += offsetof(struct tpmt_ha, digest);
 			switch (algo) {
+#if IS_ENABLED(CONFIG_SHA1)
 			case TPM2_ALG_SHA1:
+#endif
+#if IS_ENABLED(CONFIG_SHA256)
 			case TPM2_ALG_SHA256:
+#endif
+#if IS_ENABLED(CONFIG_SHA384)
 			case TPM2_ALG_SHA384:
+#endif
+#if IS_ENABLED(CONFIG_SHA512)
 			case TPM2_ALG_SHA512:
+#endif
 				len = tpm2_algorithm_to_len(algo);
 				break;
 			default:
@@ -450,10 +480,18 @@ static int tcg2_log_parse(struct udevice *dev, struct tcg2_event_log *elog)
 			return 0;
 
 		switch (algo) {
+#if IS_ENABLED(CONFIG_SHA1)
 		case TPM2_ALG_SHA1:
+#endif
+#if IS_ENABLED(CONFIG_SHA256)
 		case TPM2_ALG_SHA256:
+#endif
+#if IS_ENABLED(CONFIG_SHA384)
 		case TPM2_ALG_SHA384:
+#endif
+#if IS_ENABLED(CONFIG_SHA512)
 		case TPM2_ALG_SHA512:
+#endif
 			len = get_unaligned_le16(&event->digest_sizes[i].digest_size);
 			if (tpm2_algorithm_to_len(algo) != len)
 				return 0;

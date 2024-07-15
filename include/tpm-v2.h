@@ -285,38 +285,30 @@ struct digest_info {
 
 
 static const struct digest_info hash_algo_list[] = {
-#if IS_ENABLED(CONFIG_SHA1)
 	{
 		"sha1",
 		TPM2_ALG_SHA1,
 		TCG2_BOOT_HASH_ALG_SHA1,
 		TPM2_SHA1_DIGEST_SIZE,
 	},
-#endif
-#if IS_ENABLED(CONFIG_SHA256)
 	{
 		"sha256",
 		TPM2_ALG_SHA256,
 		TCG2_BOOT_HASH_ALG_SHA256,
 		TPM2_SHA256_DIGEST_SIZE,
 	},
-#endif
-#if IS_ENABLED(CONFIG_SHA384)
 	{
 		"sha384",
 		TPM2_ALG_SHA384,
 		TCG2_BOOT_HASH_ALG_SHA384,
 		TPM2_SHA384_DIGEST_SIZE,
 	},
-#endif
-#if IS_ENABLED(CONFIG_SHA512)
 	{
 		"sha512",
 		TPM2_ALG_SHA512,
 		TCG2_BOOT_HASH_ALG_SHA512,
 		TPM2_SHA512_DIGEST_SIZE,
 	},
-#endif
 	{
 		"sha3_256",
 		TPM2_ALG_SHA3_256,
