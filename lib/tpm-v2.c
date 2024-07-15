@@ -413,14 +413,6 @@ int tpm2_get_pcr_info(struct udevice *dev, struct tpml_pcr_selection *pcrs)
 		return ret;
 
 	pcrs->count = get_unaligned_be32(response);
-	/*
-	 * We only support 4 algorithms for now so check against that
-	 * instead of TPM2_NUM_PCR_BANKS
-	 */
-	if (pcrs->count > 4 || pcrs->count < 1) {
-		printf("%s: too many pcrs: %u\n", __func__, pcrs->count);
-		return -EMSGSIZE;
-	}
 
 	ret = tpm2_get_num_pcr(dev, &num_pcr);
 	if (ret)
